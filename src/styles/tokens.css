@@ -653,3 +653,29 @@ img { max-width: 100%; display: block; }
 }
 .api-box .ep { color: var(--accent); }
 .api-box .mt { color: var(--teal); }
+/* ===== ADD THESE TO THE END OF tokens.css ===== */
+
+/* New HR app icon colors */
+.ic-benefits { background: linear-gradient(135deg, #F472B6, #DB2777); color: #fff; }
+.ic-handbook { background: linear-gradient(135deg, #A78BFA, #7C3AED); color: #fff; }
+.ic-learning { background: linear-gradient(135deg, #34D399, #059669); color: #fff; }
+
+/* Logo images — replaces old .auth-logo, .logo-mark, .logo-text */
+.header-logo-img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+}
+.auth-logo-img {
+  width: 200px;
+  height: auto;
+  margin: 0 auto 20px;
+  display: block;
+  animation: logoFloat 3s ease-in-out infinite;
+}
+.ao-logo-img {
+  width: 180px;
+  height: auto;
+  margin-bottom: 20px;
+  animation: aoPulse 1.6s ease-in-out infinite;
+}
