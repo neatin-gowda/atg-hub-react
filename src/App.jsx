@@ -31,6 +31,7 @@ function AppLayout() {
         <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/apps" element={<ProtectedRoute><AllApps /></ProtectedRoute>} />
+        <Route path="/apps/:category" element={<ProtectedRoute><AllApps /></ProtectedRoute>} />
         <Route path="/app/hr-voice" element={<ProtectedRoute><VoiceAgent /></ProtectedRoute>} />
         <Route path="/app/:id" element={<ProtectedRoute><AgentDetail /></ProtectedRoute>} />
         <Route path="/leave" element={<ProtectedRoute><Leave /></ProtectedRoute>} />
