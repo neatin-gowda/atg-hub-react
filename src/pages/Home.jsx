@@ -8,7 +8,8 @@ import { AI_AGENTS, HR_APPS, INTERNAL_APPS, SEED_ANNOUNCEMENTS, SEED_KUDOS } fro
 import Avatar, { getInitials } from '../components/Avatar';
 import AppCard from '../components/AppCard';
 import Carousel from '../components/Carousel';
-import { IconLayers, IconSun, IconMoon, IconHeart, IconPulse, IconBolt, IconHelp, IconCalendar, IconCard } from '../components/Icons';
+import AtlasLogo from '../components/AtlasLogo';
+import { IconSun, IconMoon, IconHeart, IconPulse, IconBolt, IconHelp } from '../components/Icons';
 
 function timeAgo(iso) {
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -50,22 +51,14 @@ export default function Home() {
   return (
     <div className="page-enter">
       <div className="content">
-
-        {/* Brand + Theme toggle */}
         <div className="brand-strip">
           <div className="logo">
-            <img
-              src={theme === 'dark' ? '/assets/images/logo/logo-dark.png' : '/assets/images/logo/logo-light.png'}
-              alt="ATLAS"
-              className="header-logo-img"
-            />
+            <AtlasLogo size="sm" variant={theme === 'dark' ? 'dark' : 'light'} />
           </div>
           <button className="theme-btn" onClick={toggle} title="Toggle theme">
             {theme === 'dark' ? <IconSun /> : <IconMoon />}
           </button>
         </div>
-
-        {/* Greeting */}
         <header className="header">
           <div className="greeting">
             <div className="date">{dateStr}</div>
@@ -73,31 +66,14 @@ export default function Home() {
           </div>
           <Avatar name={user?.name} size="md" style={{ cursor: 'pointer', background: 'linear-gradient(135deg, var(--bg3), var(--bg4))', color: 'var(--accent)', border: '1.5px solid var(--bd2)' }} onClick={() => navigate('/profile')} />
         </header>
-
         <div className="stagger">
-
-          {/* Carousel */}
           <Carousel />
-
-          {/* ===== AI HUB ===== */}
           <div className="sh"><h2>AI <em>Hub</em></h2><a onClick={() => navigate('/apps/agents')}>See all →</a></div>
-          <div className="app-list">
-            {AI_AGENTS.slice(0, 3).map(a => <AppCard key={a.id} app={a} />)}
-          </div>
-
-          {/* ===== HR ENGAGEMENT ===== */}
+          <div className="app-list">{AI_AGENTS.slice(0, 3).map(a => <AppCard key={a.id} app={a} />)}</div>
           <div className="sh"><h2>HR <em>Engagement</em></h2><a onClick={() => navigate('/apps/hr')}>See all →</a></div>
-          <div className="app-list">
-            {HR_APPS.slice(0, 2).map(a => <AppCard key={a.id} app={a} />)}
-          </div>
-
-          {/* ===== INTERNAL APPS ===== */}
+          <div className="app-list">{HR_APPS.slice(0, 2).map(a => <AppCard key={a.id} app={a} />)}</div>
           <div className="sh"><h2>Internal <em>Apps</em></h2><a onClick={() => navigate('/apps/internal')}>See all →</a></div>
-          <div className="app-list">
-            {INTERNAL_APPS.slice(0, 2).map(a => <AppCard key={a.id} app={a} />)}
-          </div>
-
-          {/* ===== WELLBEING ===== */}
+          <div className="app-list">{INTERNAL_APPS.slice(0, 2).map(a => <AppCard key={a.id} app={a} />)}</div>
           <div className="sh"><h2>Wellbeing</h2></div>
           <div className="wb-grid">
             <div className="wb" onClick={() => show('Opening mindfulness…')}><div className="wi ic-wellbeing"><IconHeart width="18" height="18" /></div><h4>Mindfulness</h4><div className="ws">5-min guided session</div></div>
@@ -105,46 +81,26 @@ export default function Home() {
             <div className="wb" onClick={() => show('Fitness challenge active!')}><div className="wi ic-data"><IconBolt width="18" height="18" /></div><h4>Fitness Challenge</h4><div className="ws">Team competition</div></div>
             <div className="wb" onClick={() => show('Opening support portal…')}><div className="wi ic-finance"><IconHelp width="18" height="18" /></div><h4>EAP Support</h4><div className="ws">Confidential counselling</div></div>
           </div>
-
-          {/* ===== ANNOUNCEMENTS ===== */}
           <div className="sh"><h2>Announcements</h2></div>
           <div className="ann-list">
             {announcements.slice(0, 4).map((a, i) => (
               <div className="ann-card" key={i}>
-                <div className="ann-img">
-                  <img src={ANN_IMG[i % ANN_IMG.length]} alt="" loading="lazy" />
-                  <span className="ann-badge">{a.category || 'News'}</span>
-                </div>
-                <div className="ann-body">
-                  <h3>{a.title}</h3>
-                  <p>{a.body}</p>
-                  <div className="ann-meta">
-                    <div className="author">
-                      <div className="av av-sm" style={{ width: 18, height: 18, fontSize: 8, background: 'var(--gbrand)', color: '#fff' }}>{getInitials(a.author_name)}</div>
-                      <span>{a.author_name}</span>
-                    </div>
-                    <span style={{ fontSize: 10, color: 'var(--t4)' }}>{timeAgo(a.created_at)}</span>
-                  </div>
+                <div className="ann-img"><img src={ANN_IMG[i % ANN_IMG.length]} alt="" loading="lazy" /><span className="ann-badge">{a.category || 'News'}</span></div>
+                <div className="ann-body"><h3>{a.title}</h3><p>{a.body}</p>
+                  <div className="ann-meta"><div className="author"><div className="av av-sm" style={{ width: 18, height: 18, fontSize: 8, background: 'var(--gbrand)', color: '#fff' }}>{getInitials(a.author_name)}</div><span>{a.author_name}</span></div><span style={{ fontSize: 10, color: 'var(--t4)' }}>{timeAgo(a.created_at)}</span></div>
                 </div>
               </div>
             ))}
           </div>
-
-          {/* ===== KUDOS FEED ===== */}
           <div className="sh"><h2>Kudos <em>Feed</em></h2><a onClick={() => navigate('/kudos/give')}>Give →</a></div>
           <div className="kudos-feed">
             {kudos.slice(0, 5).map((k, i) => (
               <div className="kudo" key={i}>
-                <div className="kh">
-                  <div className="av av-sm kav">{getInitials(k.from_name)}</div>
-                  <div className="kwho"><strong>{k.from_name}</strong> → <em>{k.to_name}</em></div>
-                  <div className="kt">{timeAgo(k.created_at)}</div>
-                </div>
+                <div className="kh"><div className="av av-sm kav">{getInitials(k.from_name)}</div><div className="kwho"><strong>{k.from_name}</strong> → <em>{k.to_name}</em></div><div className="kt">{timeAgo(k.created_at)}</div></div>
                 <div className="km">"{k.message}"</div>
               </div>
             ))}
           </div>
-
         </div>
       </div>
     </div>
