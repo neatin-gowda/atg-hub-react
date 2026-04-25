@@ -1,0 +1,13 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "",
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "COSMOS_ENDPOINT": "https://YOUR-ACCOUNT.documents.azure.com:443/",
+    "COSMOS_KEY": "YOUR_PRIMARY_KEY",
+    "COSMOS_DB": "atgemphub",
+    "JWT_SECRET": "generate-a-random-64-char-string",
+    "ADMIN_EMAILS": "admin@atg.com"
+  },
+  "Host": { "CORS": "*", "LocalHttpPort": 7071 }
+}

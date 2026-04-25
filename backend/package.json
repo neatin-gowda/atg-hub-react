@@ -1,0 +1,14 @@
+{
+  "name": "atg-emp-hub-api",
+  "version": "1.0.0",
+  "description": "ATG Employee Hub API — Azure Functions",
+  "main": "src-functions/index.js",
+  "scripts": { "start": "func start", "test": "node --test" },
+  "dependencies": {
+    "@azure/cosmos": "^4.1.1",
+    "@azure/functions": "^4.5.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "engines": { "node": ">=20" }
+}
