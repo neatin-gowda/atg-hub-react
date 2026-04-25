@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { getConfig } from '../config';
-import { IconLayers, IconLock } from '../components/Icons';
+import { IconLock } from '../components/Icons';
+import AtlasLogo from '../components/AtlasLogo';
+import { useTheme } from '../context/ThemeContext';
 import LoadingOverlay from '../components/LoadingOverlay';
 
 export default function Login() {
@@ -16,6 +18,7 @@ export default function Login() {
   const { show } = useToast();
   const navigate = useNavigate();
   const cfg = getConfig();
+  const { theme } = useTheme();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,7 +45,7 @@ export default function Login() {
       <LoadingOverlay {...overlay} />
       <div className="auth-page">
         <div className="auth-inner">
-          <div className="auth-logo"><IconLayers /></div>
+          <div className="auth-logo"><AtlasLogo /></div>
           <h1 className="auth-title">{cfg.companyName}<em>{cfg.appName}</em></h1>
           <p className="auth-sub">{cfg.tagline}</p>
           <div className="auth-eye">Welcome</div>
@@ -51,7 +54,7 @@ export default function Login() {
           <form onSubmit={handleSubmit}>
             <div className="fg">
               <label className="fl">Work email</label>
-              <input className="fi" type="email" placeholder="you@atg.com" required value={email} onChange={e => setEmail(e.target.value)} />
+              <input className="fi" type="email" placeholder="you@atgemp.com" required value={email} onChange={e => setEmail(e.target.value)} />
             </div>
             <div className="fg">
               <label className="fl">Password</label>
