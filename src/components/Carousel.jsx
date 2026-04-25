@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 const SLIDES = [
-  { tag: 'Technology', title: 'Microsoft 365 Copilot — Now Available for All', sub: 'Every employee now has access across Word, Excel, PowerPoint, Outlook & Teams.', img: 'https://images.pexels.com/photos/546819/pexels-photo-546819.jpeg?auto=compress&cs=tinysrgb&w=800&h=400&fit=crop' },
+  { tag: 'Technology', title: 'Microsoft 365 Copilot — Now Available for All', sub: 'Every employee now has access across Word, Excel, PowerPoint, Outlook & Teams.', img: '/assets/images/hero/carousel-1-copilot.jpg' },
   { tag: 'Preview', title: 'M365 Cowork is Now in Preview', sub: 'AI-powered collaboration workspace inside Teams. Early access open.', img: 'https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=800&h=400&fit=crop' },
   { tag: 'AI News', title: 'Latest AI: GPT-5 & Enterprise Trends', sub: 'OpenAI benchmarks, Copilot Studio updates, enterprise AI insights.', img: 'https://images.pexels.com/photos/1089438/pexels-photo-1089438.jpeg?auto=compress&cs=tinysrgb&w=800&h=400&fit=crop' },
   { tag: 'Wellbeing', title: 'Wellness Week Starts Monday', sub: 'Guided mindfulness, fitness challenges, and mental health workshops.', img: 'https://images.pexels.com/photos/2044434/pexels-photo-2044434.jpeg?auto=compress&cs=tinysrgb&w=800&h=400&fit=crop' },
