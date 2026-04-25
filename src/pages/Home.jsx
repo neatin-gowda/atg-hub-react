@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import { getConfig } from '../config';
-import { APPS, SEED_ANNOUNCEMENTS, SEED_KUDOS } from '../data/registry';
+import { AI_AGENTS, HR_APPS, INTERNAL_APPS, SEED_ANNOUNCEMENTS, SEED_KUDOS } from '../data/registry';
 import Avatar, { getInitials } from '../components/Avatar';
 import AppCard from '../components/AppCard';
 import Carousel from '../components/Carousel';
@@ -17,9 +17,9 @@ function timeAgo(iso) {
 }
 
 const ANN_IMG = [
-  'https://images.pexels.com/photos/1181244/pexels-photo-1181244.jpeg?auto=compress&cs=tinysrgb&w=600&h=300&fit=crop',
-  'https://images.pexels.com/photos/3182773/pexels-photo-3182773.jpeg?auto=compress&cs=tinysrgb&w=600&h=300&fit=crop',
-  'https://images.pexels.com/photos/1089438/pexels-photo-1089438.jpeg?auto=compress&cs=tinysrgb&w=600&h=300&fit=crop',
+  '/assets/images/announcements/ann-1-copilot.jpg',
+  '/assets/images/announcements/ann-2-cowork.jpg',
+  '/assets/images/announcements/ann-3-agents.jpg',
 ];
 
 export default function Home() {
@@ -46,63 +46,58 @@ export default function Home() {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
   const dateStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-  const agents = APPS.filter(a => a.type === 'agent' || a.type === 'voice').slice(0, 3);
-  const apps = APPS.filter(a => a.type === 'app').slice(0, 2);
 
   return (
     <div className="page-enter">
       <div className="content">
+
+        {/* Brand + Theme toggle */}
         <div className="brand-strip">
           <div className="logo">
-            <div className="logo-mark"><IconLayers /></div>
-            <div className="logo-text">{cfg.companyName}<em>{cfg.appName}</em></div>
+            <img
+              src={theme === 'dark' ? '/assets/images/logo/logo-dark.png' : '/assets/images/logo/logo-light.png'}
+              alt="ATLAS"
+              className="header-logo-img"
+            />
           </div>
           <button className="theme-btn" onClick={toggle} title="Toggle theme">
             {theme === 'dark' ? <IconSun /> : <IconMoon />}
           </button>
         </div>
 
+        {/* Greeting */}
         <header className="header">
           <div className="greeting">
             <div className="date">{dateStr}</div>
             <div className="name">{greeting}, <em>{user?.name?.split(' ')[0]}</em></div>
           </div>
-          <Avatar name={user?.name} size="md" className="notif-wrap" style={{ cursor: 'pointer', background: 'linear-gradient(135deg, var(--bg3), var(--bg4))', color: 'var(--accent)', border: '1.5px solid var(--bd2)' }} onClick={() => navigate('/profile')}>
-            <div className="notif-dot" />
-          </Avatar>
+          <Avatar name={user?.name} size="md" style={{ cursor: 'pointer', background: 'linear-gradient(135deg, var(--bg3), var(--bg4))', color: 'var(--accent)', border: '1.5px solid var(--bd2)' }} onClick={() => navigate('/profile')} />
         </header>
 
         <div className="stagger">
+
+          {/* Carousel */}
           <Carousel />
 
-          <div className="qstats">
-            <div className="qs"><div className="n">8</div><div className="l">Apps live</div></div>
-            <div className="qs"><div className="n">5</div><div className="l">AI agents</div></div>
-            <div className="qs"><div className="n">{stats.given || 0}</div><div className="l">Kudos</div></div>
+          {/* ===== AI HUB ===== */}
+          <div className="sh"><h2>AI <em>Hub</em></h2><a onClick={() => navigate('/apps/agents')}>See all →</a></div>
+          <div className="app-list">
+            {AI_AGENTS.slice(0, 3).map(a => <AppCard key={a.id} app={a} />)}
           </div>
 
-          <div className="sh"><h2>AI <em>Agents</em></h2><a onClick={() => navigate('/apps')}>See all →</a></div>
-          <div className="app-list">{agents.map(a => <AppCard key={a.id} app={a} />)}</div>
-
-          <div className="sh"><h2>HR <em>Engagement</em></h2></div>
-          <div className="hr-cards">
-            <div className="hr-card" onClick={() => navigate('/leave')}>
-              <div className="hr-icon ic-leave"><IconCalendar width="20" height="20" /></div>
-              <h4>Leave Details</h4>
-              <div className="hr-sub">Leave balance & requests</div>
-              <div className="hr-badge hr-badge-pending">2 pending</div>
-            </div>
-            <div className="hr-card" onClick={() => show('April salary processed ✓', 'success')}>
-              <div className="hr-icon ic-salary"><IconCard width="20" height="20" /></div>
-              <h4>Salary Status</h4>
-              <div className="hr-sub">April payroll processed</div>
-              <div className="hr-badge hr-badge-ok">✓ Deposited</div>
-            </div>
+          {/* ===== HR ENGAGEMENT ===== */}
+          <div className="sh"><h2>HR <em>Engagement</em></h2><a onClick={() => navigate('/apps/hr')}>See all →</a></div>
+          <div className="app-list">
+            {HR_APPS.slice(0, 2).map(a => <AppCard key={a.id} app={a} />)}
           </div>
 
-          <div className="sh"><h2>Internal <em>Apps</em></h2></div>
-          <div className="app-list">{apps.map(a => <AppCard key={a.id} app={a} />)}</div>
+          {/* ===== INTERNAL APPS ===== */}
+          <div className="sh"><h2>Internal <em>Apps</em></h2><a onClick={() => navigate('/apps/internal')}>See all →</a></div>
+          <div className="app-list">
+            {INTERNAL_APPS.slice(0, 2).map(a => <AppCard key={a.id} app={a} />)}
+          </div>
 
+          {/* ===== WELLBEING ===== */}
           <div className="sh"><h2>Wellbeing</h2></div>
           <div className="wb-grid">
             <div className="wb" onClick={() => show('Opening mindfulness…')}><div className="wi ic-wellbeing"><IconHeart width="18" height="18" /></div><h4>Mindfulness</h4><div className="ws">5-min guided session</div></div>
@@ -111,6 +106,7 @@ export default function Home() {
             <div className="wb" onClick={() => show('Opening support portal…')}><div className="wi ic-finance"><IconHelp width="18" height="18" /></div><h4>EAP Support</h4><div className="ws">Confidential counselling</div></div>
           </div>
 
+          {/* ===== ANNOUNCEMENTS ===== */}
           <div className="sh"><h2>Announcements</h2></div>
           <div className="ann-list">
             {announcements.slice(0, 4).map((a, i) => (
@@ -134,6 +130,7 @@ export default function Home() {
             ))}
           </div>
 
+          {/* ===== KUDOS FEED ===== */}
           <div className="sh"><h2>Kudos <em>Feed</em></h2><a onClick={() => navigate('/kudos/give')}>Give →</a></div>
           <div className="kudos-feed">
             {kudos.slice(0, 5).map((k, i) => (
@@ -147,6 +144,7 @@ export default function Home() {
               </div>
             ))}
           </div>
+
         </div>
       </div>
     </div>
