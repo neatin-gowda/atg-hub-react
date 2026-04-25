@@ -5,58 +5,49 @@ const VARIANTS = {
   white:    { main: '#FFFFFF', detail: 'rgba(255,255,255,0.5)' },
 };
 
-const SIZES = { sm: 26, md: 38, lg: 46, xl: 128 };
+const SIZES = { sm: 24, md: 36, lg: 64, xl: 128 };
 
 export default function AtlasLogo({ height, size = 'md', variant = 'dark', style = {}, className = '' }) {
-  const h = height || SIZES[size] || 40;
+  const h = height || SIZES[size] || 36;
   const { main, detail } = VARIANTS[variant] || VARIANTS.dark;
   const w = h * 4.5;
 
   return (
     <svg viewBox="0 0 540 120" width={w} height={h} className={className} style={{ display: 'block', ...style }} xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ATLAS">
-      {/* A (first) — bold */}
-      <g fill="none" stroke={main} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
+      <g fill="none" stroke={main} strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
         <line x1="24" y1="100" x2="50" y2="10"/>
         <line x1="76" y1="100" x2="50" y2="10"/>
         <line x1="32" y1="62" x2="68" y2="62"/>
       </g>
-
-      {/* T — bold */}
-      <g fill="none" stroke={main} strokeWidth="8" strokeLinecap="round" strokeLinejoin="round">
+      <g fill="none" stroke={main} strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
         <line x1="100" y1="10" x2="170" y2="10"/>
         <line x1="135" y1="10" x2="135" y2="100"/>
       </g>
-
-      {/* L — with crosshair "locate" */}
-      <g fill="none" stroke={main} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
+      <g fill="none" stroke={main} strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
         <line x1="200" y1="10" x2="200" y2="100"/>
         <line x1="200" y1="100" x2="260" y2="100"/>
+        <circle cx="200" cy="100" r="6" stroke={detail} strokeWidth="2.5" fill="none"/>
+        <line x1="195" y1="100" x2="205" y2="100" stroke={detail} strokeWidth="2.5"/>
+        <line x1="200" y1="95" x2="200" y2="105" stroke={detail} strokeWidth="2.5"/>
       </g>
-      <circle cx="200" cy="100" r="6" stroke={detail} strokeWidth="3.5" fill="none"/>
-      <line x1="192" y1="100" x2="208" y2="100" stroke={detail} strokeWidth="3.5" strokeLinecap="round"/>
-      <line x1="200" y1="92" x2="200" y2="108" stroke={detail} strokeWidth="3.5" strokeLinecap="round"/>
-
-      {/* A (second) — with key "access" */}
-      <g fill="none" stroke={main} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
+      <g fill="none" stroke={main} strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
         <line x1="294" y1="100" x2="320" y2="10"/>
         <line x1="346" y1="100" x2="320" y2="10"/>
         <line x1="302" y1="62" x2="338" y2="62"/>
+        <rect x="312" y="56" width="16" height="12" fill="none" stroke={detail} strokeWidth="2.5" rx="1.5"/>
+        <circle cx="329" cy="62" r="3" fill={detail}/>
+        <line x1="332" y1="62" x2="338" y2="62" stroke={detail} strokeWidth="2.5"/>
       </g>
-      <rect x="310" y="54" width="18" height="14" fill="none" stroke={detail} strokeWidth="3.5" rx="2"/>
-      <circle cx="330" cy="62" r="3" fill={detail}/>
-      <line x1="334" y1="62" x2="340" y2="62" stroke={detail} strokeWidth="3.5" strokeLinecap="round"/>
-
-      {/* S — with share nodes */}
-      <g fill="none" stroke={main} strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
+      <g fill="none" stroke={main} strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M460,28 C460,16 448,10 433,10 C416,10 405,18 405,32 C405,44 416,48 433,55 C450,62 461,68 461,82 C461,94 449,102 433,102 C416,102 403,93 403,80"/>
+        <circle cx="433" cy="10" r="3" fill={detail}/>
+        <circle cx="433" cy="55" r="3" fill={detail}/>
+        <circle cx="433" cy="102" r="3" fill={detail}/>
+        <line x1="427" y1="8" x2="419" y2="2" stroke={detail} strokeWidth="2.5"/>
+        <line x1="439" y1="8" x2="447" y2="2" stroke={detail} strokeWidth="2.5"/>
+        <line x1="427" y1="104" x2="419" y2="110" stroke={detail} strokeWidth="2.5"/>
+        <line x1="439" y1="104" x2="447" y2="110" stroke={detail} strokeWidth="2.5"/>
       </g>
-      <circle cx="433" cy="10" r="5" fill={detail}/>
-      <circle cx="433" cy="55" r="5" fill={detail}/>
-      <circle cx="433" cy="102" r="5" fill={detail}/>
-      <line x1="427" y1="6" x2="417" y2="0" stroke={detail} strokeWidth="3" strokeLinecap="round"/>
-      <line x1="439" y1="6" x2="449" y2="0" stroke={detail} strokeWidth="3" strokeLinecap="round"/>
-      <line x1="427" y1="106" x2="417" y2="112" stroke={detail} strokeWidth="3" strokeLinecap="round"/>
-      <line x1="439" y1="106" x2="449" y2="112" stroke={detail} strokeWidth="3" strokeLinecap="round"/>
     </svg>
   );
 }
@@ -71,7 +62,7 @@ export function AtlasIcon({ size = 56, className = '', style = {} }) {
       position: 'relative', overflow: 'hidden', ...style
     }}>
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(255,255,255,.25), transparent 50%)' }}/>
-      <AtlasLogo height={size * 0.5} variant="onOrange" style={{ zIndex: 1 }}/>
+      <AtlasLogo height={size * 0.4} variant="onOrange" style={{ zIndex: 1 }}/>
     </div>
   );
 }
