@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { getConfig } from '../config';
-import { APPS, HR_QA, HR_QUICK_CHIPS } from '../data/registry';
+import { ALL_APPS, HR_QA, HR_QUICK_CHIPS } from '../data/registry';
 import { IconChevLeft, IconPhone, IconChat, IconSend, IconStar } from '../components/Icons';
 
 export default function VoiceAgent() {
-  const app = APPS.find(a => a.id === 'hr-voice');
+  const app = ALL_APPS.find(a => a.id === 'hr-voice');
   const navigate = useNavigate();
   const { apiFetch } = useAuth();
   const { show } = useToast();
