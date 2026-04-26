@@ -5,7 +5,7 @@ import { useToast } from '../context/ToastContext';
 import { useTheme } from '../context/ThemeContext';
 import { getConfig } from '../config';
 import { IconLock } from '../components/Icons';
-import AtlasLogo, { AtlasIcon } from '../components/AtlasLogo';
+import { AtlasIcon, AtlasTitle } from '../components/AtlasLogo';
 import LoadingOverlay from '../components/LoadingOverlay';
 
 export default function Login() {
@@ -45,9 +45,11 @@ export default function Login() {
       <LoadingOverlay {...overlay} />
       <div className="auth-page">
         <div className="auth-inner">
-          <AtlasIcon size={56} style={{ margin: '0 auto 16px' }} />
-          <AtlasLogo size="lg" variant={theme === 'dark' ? 'dark' : 'light'} style={{ margin: '0 auto 6px' }} />
-          <p className="auth-sub">{cfg.tagline}</p>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <AtlasIcon size={64} style={{ margin: '0 auto 18px' }} />
+            <AtlasTitle variant={theme === 'dark' ? 'dark' : 'light'} />
+            <p className="auth-sub" style={{ marginTop: 6 }}>{cfg.tagline}</p>
+          </div>
           <div className="auth-eye">Welcome</div>
           <h2 className="auth-heading">Sign in to <em>your hub</em></h2>
           {error && <div className="msg msg-err">{error}</div>}
