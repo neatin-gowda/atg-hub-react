@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useTheme } from '../context/ThemeContext';
 import { getConfig } from '../config';
-import AtlasLogo, { AtlasIcon } from '../components/AtlasLogo';
+import { AtlasIcon, AtlasTitle } from '../components/AtlasLogo';
 import LoadingOverlay from '../components/LoadingOverlay';
 
 export default function Register() {
@@ -45,9 +45,11 @@ export default function Register() {
       <LoadingOverlay {...overlay} />
       <div className="auth-page">
         <div className="auth-inner">
-          <AtlasIcon size={56} style={{ margin: '0 auto 16px' }} />
-          <AtlasLogo size="lg" variant={theme === 'dark' ? 'dark' : 'light'} style={{ margin: '0 auto 6px' }} />
-          <p className="auth-sub">{cfg.tagline}</p>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <AtlasIcon size={64} style={{ margin: '0 auto 18px' }} />
+            <AtlasTitle variant={theme === 'dark' ? 'dark' : 'light'} />
+            <p className="auth-sub" style={{ marginTop: 6 }}>{cfg.tagline}</p>
+          </div>
           <div className="auth-eye">Get started</div>
           <h2 className="auth-heading">Create <em>your account</em></h2>
           {error && <div className="msg msg-err">{error}</div>}
