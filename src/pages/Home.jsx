@@ -18,9 +18,9 @@ function timeAgo(iso) {
 }
 
 const ANN_IMG = [
-  '/assets/images/announcements/ann-1-copilot.jpg',
-  '/assets/images/announcements/ann-2-cowork.jpg',
-  '/assets/images/announcements/ann-3-agents.jpg',
+  '/assets/images/hero/carousel-1-copilot.jpg',
+  '/assets/images/hero/carousel-2-cowork.jpg',
+  '/assets/images/hero/carousel-3-ai-news.jpg',
 ];
 
 export default function Home() {
