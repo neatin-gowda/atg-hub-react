@@ -1,5 +1,5 @@
 /* ================================================================
-   ATG HUB — Design System Tokens + Base Styles
+   ATG HUB â€” Design System Tokens + Base Styles
    Dual theme: Dark (Obsidian) / Light (Pearl)
    Brand: #DE6211 accent + #011B58 depth
 ================================================================ */
@@ -205,14 +205,21 @@ img { max-width: 100%; display: block; }
 
 /* ===== AUTH ===== */
 .auth-page {
-  min-height: 100dvh; padding: 0 36px; display: flex;
+  min-height: 100dvh; padding: 0 34px; display: flex;
   flex-direction: column; align-items: center; justify-content: center;
   overflow-y: auto; -webkit-overflow-scrolling: touch;
+  background:
+    radial-gradient(circle at 50% 12%, rgba(222,98,17,.12), transparent 30%),
+    radial-gradient(circle at 15% 85%, rgba(1,27,88,.18), transparent 34%);
 }
 @supports (padding: max(0px)) {
   .auth-page { padding-top: max(20px, var(--st)); padding-bottom: max(20px, var(--sb)); }
 }
-.auth-inner { width: 100%; max-width: 340px; }
+.auth-inner { width: 100%; max-width: 342px; }
+.auth-brand-lockup {
+  text-align: center; margin-bottom: 24px; display: flex;
+  flex-direction: column; align-items: center;
+}
 .auth-logo {
   width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 20px;
   background: var(--gbrand); display: grid; place-items: center;
@@ -230,10 +237,14 @@ img { max-width: 100%; display: block; }
 }
 .auth-title { font-family: var(--fd); font-size: 28px; font-weight: 600; text-align: center; margin-bottom: 3px; }
 .auth-title em { font-style: normal; color: var(--accent); font-weight: 500; }
-.auth-sub { text-align: center; color: var(--t3); font-size: 12.5px; margin-bottom: 32px; font-weight: 300; }
+.auth-sub { text-align: center; color: var(--t3); font-size: 12.5px; margin: 8px auto 0; font-weight: 300; max-width: 260px; }
 .auth-eye { text-align: center; font-size: 9px; color: var(--accent); text-transform: uppercase; letter-spacing: .22em; font-weight: 600; margin-bottom: 6px; }
-.auth-heading { font-family: var(--fd); font-size: 19px; font-weight: 500; text-align: center; margin-bottom: 24px; }
+.auth-heading { font-family: var(--fd); font-size: 20px; font-weight: 500; text-align: center; margin-bottom: 24px; }
 .auth-heading em { font-style: normal; color: var(--accent2); }
+.auth-form { display: flex; flex-direction: column; gap: 14px; }
+.auth-form .fg { margin-bottom: 0; }
+.auth-form .btn { margin-top: 0; }
+.auth-form .btn-outline { margin-top: 0; }
 .auth-footer { padding-top: 32px; text-align: center; }
 .auth-secured {
   display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px;
@@ -255,28 +266,76 @@ img { max-width: 100%; display: block; }
 
 /* Auth loading overlay */
 .auth-overlay {
-  position: fixed; inset: 0; z-index: 9998; background: var(--bg);
+  position: fixed; inset: 0; z-index: 9998;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(222,98,17,.16), transparent 30%),
+    radial-gradient(circle at 50% 75%, rgba(1,27,88,.22), transparent 36%),
+    var(--bg);
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   opacity: 0; pointer-events: none; transition: opacity .3s;
+  padding: 28px;
 }
 .auth-overlay.on { opacity: 1; pointer-events: all; }
-.auth-overlay .ao-mark {
-  width: 64px; height: 64px; border-radius: 18px; background: var(--gbrand);
-  display: grid; place-items: center; box-shadow: 0 12px 40px rgba(222,98,17,.35);
-  animation: aoPulse 1.6s ease-in-out infinite; margin-bottom: 20px;
-  position: relative; overflow: hidden;
+.atlas-loader {
+  width: 116px; height: 116px; display: grid; place-items: center;
+  position: relative; margin-bottom: 18px;
 }
-.auth-overlay .ao-mark::before {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,.3), transparent 50%);
+.atlas-loader-icon {
+  animation: aoPulse 1.7s ease-in-out infinite;
+  z-index: 2;
 }
-.auth-overlay .ao-mark svg { width: 32px; height: 32px; color: #fff; z-index: 1; }
+.atlas-orbit {
+  position: absolute; inset: 12px; border-radius: 50%;
+  border: 1px solid rgba(222,98,17,.26);
+  box-shadow: inset 0 0 26px rgba(222,98,17,.08);
+}
+.atlas-orbit::after {
+  content: ""; position: absolute; top: 7px; left: 50%;
+  width: 7px; height: 7px; margin-left: -3.5px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 16px rgba(222,98,17,.75);
+}
+.atlas-orbit-one { animation: atlasSpin 5.4s linear infinite; }
+.atlas-orbit-two {
+  inset: 24px; border-color: rgba(255,255,255,.1);
+  animation: atlasSpin 7.2s linear infinite reverse;
+}
+.atlas-orbit-two::after { background: var(--deep); box-shadow: 0 0 14px rgba(1,27,88,.6); }
 @keyframes aoPulse {
   0%, 100% { transform: scale(1); box-shadow: 0 12px 40px rgba(222,98,17,.35); }
   50% { transform: scale(1.05); box-shadow: 0 16px 50px rgba(222,98,17,.5); }
 }
+@keyframes atlasSpin { to { transform: rotate(360deg); } }
+.atlas-meaning {
+  width: min(340px, 100%); display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 6px; margin-bottom: 22px;
+}
+.atlas-step {
+  min-width: 0; padding: 8px 6px; border-radius: var(--r2);
+  background: rgba(255,255,255,.035); border: 1px solid var(--bd);
+  text-align: center; opacity: 0; transform: translateY(8px);
+  animation: atlasStep 2.4s var(--e) infinite;
+}
+.atlas-step:nth-child(1) { animation-delay: .05s; }
+.atlas-step:nth-child(2) { animation-delay: .18s; }
+.atlas-step:nth-child(3) { animation-delay: .31s; }
+.atlas-step:nth-child(4) { animation-delay: .44s; }
+.atlas-step:nth-child(5) { animation-delay: .57s; }
+.atlas-step span {
+  display: block; font-family: var(--fd); color: var(--accent);
+  font-size: 15px; line-height: 1; margin-bottom: 3px;
+}
+.atlas-step strong {
+  display: block; color: var(--t2); font-size: 8.5px;
+  text-transform: uppercase; letter-spacing: .08em; font-weight: 700;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+@keyframes atlasStep {
+  0%, 12% { opacity: 0; transform: translateY(8px); border-color: var(--bd); }
+  26%, 68% { opacity: 1; transform: translateY(0); border-color: rgba(222,98,17,.28); }
+  100% { opacity: .45; transform: translateY(0); border-color: var(--bd); }
+}
 .auth-overlay .ao-text { font-family: var(--fd); font-size: 18px; font-weight: 500; color: var(--t1); margin-bottom: 6px; }
-.auth-overlay .ao-sub { font-size: 12px; color: var(--t3); font-weight: 300; margin-bottom: 24px; }
+.auth-overlay .ao-sub { font-size: 12px; color: var(--t3); font-weight: 300; margin-bottom: 20px; }
 .ao-dots { display: flex; gap: 6px; }
 .ao-dots span {
   width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
@@ -660,7 +719,7 @@ img { max-width: 100%; display: block; }
 .ic-handbook { background: linear-gradient(135deg, #A78BFA, #7C3AED); color: #fff; }
 .ic-learning { background: linear-gradient(135deg, #34D399, #059669); color: #fff; }
 
-/* Logo images — replaces old .auth-logo, .logo-mark, .logo-text */
+/* Logo images â€” replaces old .auth-logo, .logo-mark, .logo-text */
 .header-logo-img {
   height: 32px;
   width: auto;
