@@ -45,21 +45,21 @@ export default function Register() {
       <LoadingOverlay {...overlay} />
       <div className="auth-page">
         <div className="auth-inner">
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <AtlasIcon size={64} style={{ margin: '0 auto 18px' }} />
+          <div className="auth-brand-lockup">
+            <AtlasIcon size={66} style={{ margin: '0 auto 18px' }} />
             <AtlasTitle variant={theme === 'dark' ? 'dark' : 'light'} />
-            <p className="auth-sub" style={{ marginTop: 6 }}>{cfg.tagline}</p>
+            <p className="auth-sub">{cfg.tagline}</p>
           </div>
           <div className="auth-eye">Get started</div>
           <h2 className="auth-heading">Create <em>your account</em></h2>
           {error && <div className="msg msg-err">{error}</div>}
-          <form onSubmit={handleSubmit}>
+          <form className="auth-form" onSubmit={handleSubmit}>
             <div className="fg"><label className="fl">Full name</label><input className="fi" required placeholder="Your name" value={form.name} onChange={set('name')} /></div>
             <div className="fg"><label className="fl">Work email</label><input className="fi" type="email" required placeholder="you@company.com" value={form.email} onChange={set('email')} /></div>
             <div className="fg"><label className="fl">Department / Role</label><input className="fi" required placeholder="Engineering · AI Architect" value={form.role} onChange={set('role')} /></div>
             <div className="fg"><label className="fl">Password</label><input className="fi" type="password" required minLength="8" placeholder="At least 8 characters" value={form.password} onChange={set('password')} /></div>
-            <button type="submit" className={`btn btn-brand ${loading ? 'btn-loading' : ''}`} disabled={loading} style={{ marginTop: 10 }}>Create account</button>
-            <button type="button" className="btn btn-outline" style={{ marginTop: 14 }} onClick={() => navigate('/login')}>Back to sign in</button>
+            <button type="submit" className={`btn btn-brand ${loading ? 'btn-loading' : ''}`} disabled={loading}>Create account</button>
+            <button type="button" className="btn btn-outline" onClick={() => navigate('/login')}>Back to sign in</button>
           </form>
         </div>
       </div>
