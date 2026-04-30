@@ -12,34 +12,22 @@ const SIZES = { xs: 20, sm: 30, md: 42, lg: 52, xl: 72 };
 export default function AtlasLogo({ height, size = 'md', variant = 'dark', style = {}, className = '' }) {
   const h = height || SIZES[size] || 42;
   const { primary, accent } = V[variant] || V.dark;
-  const w = h * 4.55;
   const isPlain = variant === 'loading' || variant === 'onOrange';
 
   return (
-    <svg viewBox="0 0 455 100" width={w} height={h} className={className} style={{ display: 'block', overflow: 'visible', ...style }} xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ATLAS">
-      <text
-        x="0"
-        y="70"
-        fill={isPlain ? primary : accent}
-        fontFamily="'Playfair Display', Georgia, serif"
-        fontSize="72"
-        fontWeight="600"
-        letterSpacing="6"
-      >
-        AT
-      </text>
-      <text
-        x="162"
-        y="70"
-        fill={primary}
-        fontFamily="'Playfair Display', Georgia, serif"
-        fontSize="72"
-        fontWeight="600"
-        letterSpacing="6"
-      >
-        LAS
-      </text>
-    </svg>
+    <div
+      className={`atlas-wordmark ${className}`}
+      style={{
+        '--atlas-size': `${h}px`,
+        '--atlas-at': isPlain ? primary : accent,
+        '--atlas-las': primary,
+        ...style,
+      }}
+      role="img"
+      aria-label="ATLAS"
+    >
+      <span>AT</span><strong>LAS</strong>
+    </div>
   );
 }
 
