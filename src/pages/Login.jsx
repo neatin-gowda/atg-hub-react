@@ -45,15 +45,15 @@ export default function Login() {
       <LoadingOverlay {...overlay} />
       <div className="auth-page">
         <div className="auth-inner">
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-            <AtlasIcon size={64} style={{ margin: '0 auto 18px' }} />
+          <div className="auth-brand-lockup">
+            <AtlasIcon size={66} style={{ margin: '0 auto 18px' }} />
             <AtlasTitle variant={theme === 'dark' ? 'dark' : 'light'} />
-            <p className="auth-sub" style={{ marginTop: 6 }}>{cfg.tagline}</p>
+            <p className="auth-sub">{cfg.tagline}</p>
           </div>
           <div className="auth-eye">Welcome</div>
           <h2 className="auth-heading">Sign in to <em>your hub</em></h2>
           {error && <div className="msg msg-err">{error}</div>}
-          <form onSubmit={handleSubmit}>
+          <form className="auth-form" onSubmit={handleSubmit}>
             <div className="fg">
               <label className="fl">Work email</label>
               <input className="fi" type="email" placeholder="you@company.com" required value={email} onChange={e => setEmail(e.target.value)} />
@@ -62,8 +62,8 @@ export default function Login() {
               <label className="fl">Password</label>
               <input className="fi" type="password" placeholder="••••••••" required value={password} onChange={e => setPassword(e.target.value)} />
             </div>
-            <button type="submit" className={`btn btn-brand ${loading ? 'btn-loading' : ''}`} disabled={loading} style={{ marginTop: 10 }}>Sign in</button>
-            <button type="button" className="btn btn-outline" style={{ marginTop: 14 }} onClick={() => navigate('/register')}>Create an account</button>
+            <button type="submit" className={`btn btn-brand ${loading ? 'btn-loading' : ''}`} disabled={loading}>Sign in</button>
+            <button type="button" className="btn btn-outline" onClick={() => navigate('/register')}>Create an account</button>
           </form>
           <div className="auth-footer">
             <div className="auth-secured"><IconLock width="12" height="12" /> Secured by Microsoft Entra ID</div>
