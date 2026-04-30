@@ -63,6 +63,20 @@ img { max-width: 100%; display: block; }
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
+/* Brand wordmark */
+.atlas-wordmark {
+  display: inline-flex; align-items: baseline; gap: 0;
+  font-family: var(--fd); font-size: var(--atlas-size);
+  line-height: .9; letter-spacing: .03em; white-space: nowrap;
+  font-weight: 600; font-kerning: normal;
+}
+.atlas-wordmark span,
+.atlas-wordmark strong {
+  display: inline-block; font: inherit; letter-spacing: inherit;
+}
+.atlas-wordmark span { color: var(--atlas-at); }
+.atlas-wordmark strong { color: var(--atlas-las); }
+
 /* ===== COMMON COMPONENTS ===== */
 .btn {
   padding: 14px 24px; border-radius: var(--r2); font-size: 14px;
@@ -243,7 +257,7 @@ img { max-width: 100%; display: block; }
 .auth-title em { font-style: normal; color: var(--accent); font-weight: 500; }
 .auth-sub { text-align: center; color: var(--t3); font-size: clamp(12px, 3.3vw, 12.5px); margin: 8px auto 0; font-weight: 300; max-width: 280px; }
 .auth-eye { text-align: center; font-size: 9px; color: var(--accent); text-transform: uppercase; letter-spacing: .22em; font-weight: 600; margin-bottom: 6px; }
-.auth-heading { font-family: var(--fd); font-size: clamp(26px, 8vw, 38px); line-height: 1.14; font-weight: 500; text-align: center; margin-bottom: 24px; }
+.auth-heading { font-family: var(--fd); font-size: clamp(23px, 6.6vw, 30px); line-height: 1.16; font-weight: 500; text-align: center; margin-bottom: 24px; }
 .auth-heading em { font-style: normal; color: var(--accent2); }
 .auth-form { display: flex; flex-direction: column; gap: 14px; }
 .auth-form .fg { margin-bottom: 0; }
@@ -309,36 +323,14 @@ img { max-width: 100%; display: block; }
   50% { transform: scale(1.05); box-shadow: 0 16px 50px rgba(222,98,17,.5); }
 }
 @keyframes atlasSpin { to { transform: rotate(360deg); } }
-.atlas-loader-wordmark { margin-bottom: 18px; filter: drop-shadow(0 8px 28px rgba(0,0,0,.22)); }
+.atlas-loader-wordmark { margin-bottom: 12px; filter: drop-shadow(0 8px 28px rgba(0,0,0,.22)); }
 .atlas-meaning {
-  width: min(340px, 100%); display: grid; grid-template-columns: repeat(5, 1fr);
-  gap: 6px; margin-bottom: 22px;
+  color: rgba(255,255,255,.72); font-size: 11px; letter-spacing: .14em;
+  text-transform: uppercase; font-weight: 600; margin-bottom: 22px;
+  text-align: center; max-width: 320px;
+  animation: atlasMeaningIn 1.2s var(--e) both;
 }
-.atlas-step {
-  min-width: 0; padding: 8px 6px; border-radius: var(--r2);
-  background: rgba(255,255,255,.035); border: 1px solid var(--bd);
-  text-align: center; opacity: 0; transform: translateY(8px);
-  animation: atlasStep 2.4s var(--e) infinite;
-}
-.atlas-step:nth-child(1) { animation-delay: .05s; }
-.atlas-step:nth-child(2) { animation-delay: .18s; }
-.atlas-step:nth-child(3) { animation-delay: .31s; }
-.atlas-step:nth-child(4) { animation-delay: .44s; }
-.atlas-step:nth-child(5) { animation-delay: .57s; }
-.atlas-step span {
-  display: block; font-family: var(--fd); color: var(--accent);
-  font-size: 15px; line-height: 1; margin-bottom: 3px;
-}
-.atlas-step strong {
-  display: block; color: var(--t2); font-size: 8.5px;
-  text-transform: uppercase; letter-spacing: .08em; font-weight: 700;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-@keyframes atlasStep {
-  0%, 12% { opacity: 0; transform: translateY(8px); border-color: var(--bd); }
-  26%, 68% { opacity: 1; transform: translateY(0); border-color: rgba(222,98,17,.28); }
-  100% { opacity: .45; transform: translateY(0); border-color: var(--bd); }
-}
+@keyframes atlasMeaningIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .auth-overlay .ao-text { font-family: var(--fd); font-size: 18px; font-weight: 500; color: var(--t1); margin-bottom: 6px; }
 .auth-overlay .ao-sub { font-size: 12px; color: var(--t3); font-weight: 300; margin-bottom: 20px; }
 .ao-dots { display: flex; gap: 6px; }
