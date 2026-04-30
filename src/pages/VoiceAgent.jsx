@@ -13,7 +13,7 @@ export default function VoiceAgent() {
   const { show } = useToast();
   const cfg = getConfig();
   const [tab, setTab] = useState('chat');
-  const [messages, setMessages] = useState([{ from: 'bot', text: 'Hello! I\'m your MYHR AI Agent. Ask me about policies, benefits, leave, payroll, or anything HR-related.' }]);
+  const [messages, setMessages] = useState([{ from: 'bot', text: 'Hello! I\'m your MyHR AI Agent. Ask me about policies, benefits, leave, payroll, or anything HR-related.' }]);
   const [input, setInput] = useState('');
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState('');
@@ -43,7 +43,7 @@ export default function VoiceAgent() {
   const submitFeedback = async () => {
     if (!rating) { show('Please tap a star rating', 'error'); return; }
     try {
-      await apiFetch('/feedback', { method: 'POST', body: { text: `[MYHR Voice Agent] ${rating}/5. ${feedback}`, rating, agent: 'hr-voice' } });
+      await apiFetch('/feedback', { method: 'POST', body: { text: `[MyHR Voice Agent] ${rating}/5. ${feedback}`, rating, agent: 'hr-voice' } });
       show('Thank you for your feedback', 'success');
       setRating(0); setFeedback('');
     } catch { show('Could not submit', 'error'); }
@@ -77,7 +77,7 @@ export default function VoiceAgent() {
         <div className="voice-chat" style={{ margin: '16px 24px' }}>
           <div className="ch">
             <div className="status-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--ok)', boxShadow: '0 0 8px var(--ok)' }} />
-            <div className="nm">MYHR AI Agent</div>
+            <div className="nm">MyHR AI Agent</div>
             <div className="tg" style={{ marginLeft: 'auto', fontSize: 10, color: 'var(--t4)' }}>Online</div>
           </div>
           <div className="chat-msgs" ref={chatRef}>
@@ -97,7 +97,7 @@ export default function VoiceAgent() {
       {tab === 'call' && (
         <div style={{ padding: 24, textAlign: 'center' }}>
           <a href={cfg.hrPhoneNumber} className="call-btn"><IconPhone width="32" height="32" /></a>
-          <div className="call-label">Tap to Call MYHR Agent</div>
+          <div className="call-label">Tap to Call MyHR Agent</div>
           <div className="call-sub">AI voice support · Available 24/7</div>
         </div>
       )}
@@ -113,7 +113,7 @@ export default function VoiceAgent() {
       {/* Feedback */}
       <div className="voice-fb">
         <h4>Rate your experience</h4>
-        <div className="vfs">Help us improve the MYHR AI Agent</div>
+        <div className="vfs">Help us improve the MyHR AI Agent</div>
         <div className="stars">
           {[1,2,3,4,5].map(n => (
             <div key={n} className={`star ${n <= rating ? 'on' : ''}`} onClick={() => setRating(n)}>
