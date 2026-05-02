@@ -7,7 +7,18 @@
     "COSMOS_KEY": "YOUR_PRIMARY_KEY",
     "COSMOS_DB": "atgemphub",
     "JWT_SECRET": "generate-a-random-64-char-string",
-    "ADMIN_EMAILS": "admin@atg.com"
+    "ADMIN_EMAILS": "admin@atg.com",
+    "AZURE_OPENAI_ENDPOINT": "https://YOUR-AZURE-OPENAI-RESOURCE.openai.azure.com",
+    "AZURE_OPENAI_API_KEY": "YOUR_AZURE_OPENAI_KEY",
+    "AZURE_OPENAI_DEPLOYMENT": "gpt-4o-mini",
+    "AZURE_OPENAI_API_VERSION": "2024-10-21",
+    "OPENAI_API_KEY": "YOUR_OPENAI_API_KEY",
+    "MYHR_CHAT_MODEL": "gpt-4.1-mini",
+    "MYHR_REALTIME_MODEL": "gpt-realtime",
+    "MYHR_REALTIME_VOICE": "marin",
+    "MYHR_VOICE_LANGUAGE": "en-US",
+    "MYHR_SYSTEM_PROMPT": "You are MyHR AI Agent for ATG Hub. Help employees with HR policy, leave, payroll, benefits, onboarding, workplace support, and employee engagement questions. Use the supplied grounding context first. Be warm, concise, professional, and clear when a human HR teammate is needed.",
+    "MYHR_GROUNDING_CONTEXT": "Add approved HR policies, handbook snippets, benefits rules, payroll guidance, leave rules, and support escalation paths here. This text is injected into MyHR answers without being exposed in public /api/config."
   },
   "Host": { "CORS": "*", "LocalHttpPort": 7071 }
 }
