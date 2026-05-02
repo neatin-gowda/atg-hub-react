@@ -1,10 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { IconHome, IconGrid, IconCalendar, IconStar, IconUser } from './Icons';
+import { IconHome, IconGrid, IconMic, IconStar, IconUser } from './Icons';
 
 const TABS = [
   { path: '/', icon: IconHome, label: 'Home' },
   { path: '/apps', icon: IconGrid, label: 'Apps' },
-  { path: '/leave', icon: IconCalendar, label: 'Leave' },
+  { path: '/app/hr-voice', icon: IconMic, label: 'ATLAS' },
   { path: '/kudos/give', icon: IconStar, label: 'Kudos' },
   { path: '/profile', icon: IconUser, label: 'You' },
 ];
