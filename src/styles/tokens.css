@@ -523,6 +523,27 @@ img { max-width: 100%; display: block; }
   margin: 0 24px; border-radius: var(--r4); overflow: hidden; position: relative;
   text-align: center; padding: 28px 20px; border: 1.5px solid var(--bd);
 }
+.atlas-voice-hero {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(222,98,17,.35), transparent 42%),
+    radial-gradient(circle at 20% 100%, rgba(1,27,88,.5), transparent 45%),
+    linear-gradient(145deg, #050914, #101521 56%, #050914);
+}
+.atlas-voice-hero h2 { color: #fff; font-family: var(--fd); font-size: 27px; font-weight: 500; }
+.atlas-voice-hero p { color: rgba(255,255,255,.72); font-size: 12.5px; max-width: 310px; margin: 5px auto 0; line-height: 1.45; }
+.atlas-core {
+  width: 72px; height: 72px; margin: 0 auto 15px; border-radius: 22px;
+  display: grid; place-items: center; position: relative; color: #fff;
+  background: linear-gradient(135deg, #ff9852, #de6211 54%, #702700);
+  box-shadow: 0 16px 42px rgba(222,98,17,.35), inset 0 1px 18px rgba(255,255,255,.28);
+}
+.atlas-core svg { width: 29px; height: 29px; z-index: 2; }
+.atlas-core span {
+  position: absolute; inset: -8px; border-radius: 26px;
+  border: 1px solid rgba(222,98,17,.3); animation: atlasCorePulse 2.6s ease-in-out infinite;
+}
+.atlas-core span:last-child { inset: -16px; opacity: .45; animation-delay: .45s; }
+@keyframes atlasCorePulse { 0%, 100% { transform: scale(.96); opacity: .24; } 50% { transform: scale(1.05); opacity: .7; } }
 .voice-tabs {
   display: flex; margin: 16px 24px 0; border-radius: var(--r2);
   overflow: hidden; border: 1.5px solid var(--bd); background: var(--bg2);
@@ -560,6 +581,49 @@ img { max-width: 100%; display: block; }
     linear-gradient(145deg, var(--bg2), var(--bg3));
   border: 1.5px solid var(--bd); box-shadow: var(--cs); overflow: hidden; position: relative;
 }
+.atlas-live-card {
+  background:
+    radial-gradient(circle at 50% 4%, rgba(222,98,17,.22), transparent 35%),
+    radial-gradient(circle at 15% 100%, rgba(1,27,88,.26), transparent 34%),
+    linear-gradient(145deg, var(--bg2), var(--bg3));
+  min-height: 390px;
+  transform-style: preserve-3d;
+  transition: min-height .45s var(--sp), background .45s, transform .45s var(--sp);
+}
+.atlas-live-card.is-expanded {
+  background:
+    radial-gradient(circle at 48% 26%, rgba(255,255,255,.08), transparent 18%),
+    radial-gradient(circle at 50% 5%, rgba(222,98,17,.28), transparent 38%),
+    radial-gradient(circle at 18% 92%, rgba(1,27,88,.32), transparent 36%),
+    linear-gradient(145deg, rgba(255,255,255,.06), var(--bg2) 48%, var(--bg3));
+}
+.atlas-live-card.is-docked {
+  min-height: 330px;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(1,27,88,.28), transparent 32%),
+    radial-gradient(circle at 82% 12%, rgba(222,98,17,.18), transparent 34%),
+    linear-gradient(145deg, var(--bg2), var(--bg3));
+}
+.atlas-live-card.agent-hr .atlas-orb {
+  width: 88px; height: 88px;
+  background: radial-gradient(circle at 34% 24%, #fff4e9, #de6211 38%, #011b58 100%);
+}
+.atlas-liquid-field {
+  position: absolute; inset: 0; pointer-events: none; overflow: hidden; opacity: .95;
+}
+.atlas-liquid-field span {
+  position: absolute; border-radius: 999px; filter: blur(.2px);
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.22), rgba(222,98,17,.08) 52%, transparent 72%);
+  animation: atlasLiquidDrift 8s ease-in-out infinite alternate;
+}
+.atlas-liquid-field span:nth-child(1) { width: 150px; height: 150px; left: -34px; top: 18px; }
+.atlas-liquid-field span:nth-child(2) { width: 118px; height: 118px; right: -24px; top: 88px; animation-delay: -2.3s; }
+.atlas-liquid-field span:nth-child(3) { width: 170px; height: 170px; left: 32%; bottom: -84px; animation-delay: -4.7s; }
+@keyframes atlasLiquidDrift {
+  0% { transform: translate3d(-8px, 8px, 0) scale(.94) rotate(0deg); opacity: .36; }
+  50% { transform: translate3d(12px, -14px, 0) scale(1.08) rotate(18deg); opacity: .68; }
+  100% { transform: translate3d(-2px, -22px, 0) scale(1.16) rotate(-12deg); opacity: .42; }
+}
 .voice-live-card::before {
   content: ""; position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(120deg, transparent, rgba(255,255,255,.06), transparent);
@@ -571,20 +635,60 @@ img { max-width: 100%; display: block; }
   display: grid; place-items: center; position: relative; color: #fff;
   background: radial-gradient(circle at 35% 28%, #ffb278, #de6211 48%, #7d2b00 100%);
   box-shadow: 0 16px 42px rgba(222,98,17,.32), inset 0 1px 14px rgba(255,255,255,.28);
+  border: 0; cursor: pointer; isolation: isolate;
+  animation: atlasFloat 5.2s ease-in-out infinite;
+  transition: width .4s var(--sp), height .4s var(--sp), transform .25s var(--sp), box-shadow .35s;
+}
+.voice-orb:hover { transform: translateY(-4px) scale(1.03); }
+.voice-orb:active { transform: translateY(1px) scale(.96); }
+@keyframes atlasFloat {
+  0%, 100% { translate: 0 0; }
+  28% { translate: -7px -10px; }
+  58% { translate: 8px -5px; }
+  82% { translate: 4px 7px; }
 }
 .voice-orb svg { width: 32px; height: 32px; z-index: 2; }
-.voice-orb span {
+.voice-orb i {
   position: absolute; inset: 9px; border-radius: 50%;
   border: 1.5px solid rgba(222,98,17,.22); opacity: 0;
 }
-.voice-orb.is-listening span,
-.voice-orb.is-speaking span { animation: voicePulse 1.9s ease-out infinite; }
-.voice-orb span:nth-child(3) { animation-delay: .35s; }
-.voice-orb span:nth-child(4) { animation-delay: .7s; }
+.voice-orb b {
+  position: absolute; width: 118px; height: 32px; border-radius: 50%;
+  border-top: 1px solid rgba(255,255,255,.26); border-bottom: 1px solid rgba(222,98,17,.22);
+  transform: rotate(28deg); opacity: .35;
+}
+.voice-orb b:last-child { transform: rotate(-28deg); }
+.voice-orb em {
+  position: absolute; width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(255,255,255,.82); box-shadow: 0 0 18px rgba(255,255,255,.52);
+  offset-path: path("M 52 4 C 104 8 108 94 52 100 C -6 94 -2 8 52 4");
+  animation: atlasParticle 4.4s linear infinite;
+}
+.voice-orb em:last-child { width: 7px; height: 7px; animation-duration: 6.2s; animation-delay: -2.2s; opacity: .72; }
+@keyframes atlasParticle { to { offset-distance: 100%; } }
+.voice-orb.is-listening,
+.voice-orb.is-speaking,
+.voice-orb.is-thinking { animation: atlasFloat 5.2s ease-in-out infinite, atlasListeningGlow 1.8s ease-in-out infinite; }
+.voice-orb.is-listening i,
+.voice-orb.is-speaking i,
+.voice-orb.is-thinking i { animation: voicePulse 1.55s ease-out infinite; }
+.voice-orb i:nth-of-type(2) { animation-delay: .26s; }
+.voice-orb i:nth-of-type(3) { animation-delay: .52s; }
+.voice-orb.is-listening b,
+.voice-orb.is-speaking b,
+.voice-orb.is-thinking b { animation: atlasOrbitLine 2.8s linear infinite; }
+.voice-orb.is-listening b:last-child,
+.voice-orb.is-speaking b:last-child,
+.voice-orb.is-thinking b:last-child { animation-direction: reverse; }
 @keyframes voicePulse {
   0% { transform: scale(.86); opacity: .55; }
   100% { transform: scale(1.55); opacity: 0; }
 }
+@keyframes atlasListeningGlow {
+  0%, 100% { transform: scale(1); box-shadow: 0 16px 42px rgba(222,98,17,.32), inset 0 1px 14px rgba(255,255,255,.28); }
+  50% { transform: scale(1.04); box-shadow: 0 20px 58px rgba(222,98,17,.55), 0 0 30px rgba(222,98,17,.16), inset 0 1px 18px rgba(255,255,255,.36); }
+}
+@keyframes atlasOrbitLine { to { transform: rotate(388deg); } }
 .voice-kicker {
   display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px;
   border-radius: var(--rf); background: rgba(222,98,17,.08);
@@ -601,9 +705,32 @@ img { max-width: 100%; display: block; }
 }
 .voice-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .voice-actions .btn:disabled { opacity: .72; cursor: default; transform: none; }
+.atlas-return {
+  margin-top: 10px; color: var(--accent); font-size: 11.5px; font-weight: 800;
+  letter-spacing: .08em; text-transform: uppercase;
+}
+.atlas-return:hover { color: var(--accent2); }
 .voice-support { margin-top: 10px; font-size: 10.5px; color: var(--t4); }
 .voice-support.ok { color: var(--ok); }
 .voice-support.warn { color: var(--warn); }
+
+.atlas-cap-grid { margin: 0 24px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.atlas-cap {
+  min-height: 128px; padding: 14px; border-radius: var(--r3);
+  background: linear-gradient(145deg, var(--bg2), var(--bg3));
+  border: 1.5px solid var(--bd); position: relative; overflow: hidden;
+}
+.atlas-cap::after {
+  content: ""; position: absolute; inset: auto -20px -42px auto;
+  width: 86px; height: 86px; border-radius: 50%; background: rgba(222,98,17,.08);
+}
+.atlas-cap div {
+  width: 34px; height: 34px; border-radius: 12px; display: grid; place-items: center;
+  color: #fff; background: var(--gbrand); margin-bottom: 10px;
+}
+.atlas-cap svg { width: 16px; height: 16px; }
+.atlas-cap strong { display: block; font-size: 13px; margin-bottom: 4px; }
+.atlas-cap span { display: block; color: var(--t3); font-size: 11.5px; line-height: 1.38; font-weight: 300; }
 
 /* Chat */
 .voice-chat {
