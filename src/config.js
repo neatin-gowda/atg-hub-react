@@ -1,8 +1,12 @@
 const DEFAULTS = {
   companyName: 'ATG',
-  appName: 'Hub',
+  appName: 'ATLAS',
   tagline: 'AI-Powered Employee Workspace',
   hrPhoneNumber: 'tel:+97140000000',
+  myHrChatModel: 'gpt-4.1-mini',
+  myHrRealtimeModel: 'gpt-realtime',
+  myHrRealtimeVoice: 'marin',
+  myHrVoiceLanguage: 'en-US',
 };
 
 let _config = { ...DEFAULTS };
