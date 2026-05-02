@@ -4,7 +4,7 @@ import { IconHome, IconGrid, IconMic, IconStar, IconUser } from './Icons';
 const TABS = [
   { path: '/', icon: IconHome, label: 'Home' },
   { path: '/apps', icon: IconGrid, label: 'Apps' },
-  { path: '/app/hr-voice', icon: IconMic, label: 'ATLAS' },
+  { path: '/atlas', icon: IconMic, label: 'ATLAS' },
   { path: '/kudos/give', icon: IconStar, label: 'Kudos' },
   { path: '/profile', icon: IconUser, label: 'You' },
 ];
