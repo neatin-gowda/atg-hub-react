@@ -236,6 +236,148 @@ app.http('activity-log', {
   },
 });
 
+/* ====== MyHR AI Agent — chat + realtime voice configuration ====== */
+const MYHR_DEFAULT_SYSTEM_PROMPT = `You are MyHR AI Agent for ATG Hub.
+Help employees with HR policy, leave, payroll, benefits, onboarding, workplace support, and employee engagement questions.
+Use the supplied grounding context first. Be warm, concise, professional, and clear when a human HR teammate is needed.
+Do not invent private employee data, balances, payroll amounts, or approvals. If the answer depends on a personal record, ask the employee to open the relevant app tile or contact HR.`;
+
+const MYHR_DEFAULT_GROUNDING_CONTEXT = `Approved MyHR scope:
+- Company policies, WFH/WFA, working hours, leave, benefits, insurance, payroll, onboarding, learning, wellbeing, workplace support, and escalation guidance.
+- If policy context is missing, give a helpful next step and recommend HR confirmation for official decisions.`;
+
+function cleanText(value, max = 12000) {
+  return String(value || '').replace(/\s+/g, ' ').trim().slice(0, max);
+}
+
+function getMyHrInstructions() {
+  const prompt = cleanText(process.env.MYHR_SYSTEM_PROMPT || MYHR_DEFAULT_SYSTEM_PROMPT, 8000);
+  const grounding = cleanText(process.env.MYHR_GROUNDING_CONTEXT || MYHR_DEFAULT_GROUNDING_CONTEXT, 20000);
+  return `${prompt}\n\nGrounding context:\n${grounding}`;
+}
+
+function fallbackMyHrReply(message) {
+  const text = cleanText(message, 2000).toLowerCase();
+  if (text.includes('leave') || text.includes('vacation') || text.includes('annual')) {
+    return 'For leave, you can check your balance and submit requests from the Leave tile. Annual leave guidance depends on your country, role, and current balance, so MyHR can explain the process but HR should confirm exceptions.';
+  }
+  if (text.includes('pay') || text.includes('salary') || text.includes('payroll')) {
+    return 'For payroll questions, check the Salary or payroll tile first. If you are asking about a missing payment, payslip, or deduction, share the pay period and HR/payroll can investigate securely.';
+  }
+  if (text.includes('benefit') || text.includes('insurance') || text.includes('medical')) {
+    return 'Benefits and insurance details can vary by plan and location. I can summarize the approved policy context here, and for dependants, claims, or coverage exceptions, HR Benefits should confirm the final answer.';
+  }
+  if (text.includes('onboard') || text.includes('joining') || text.includes('new joiner')) {
+    return 'For onboarding, MyHR can help with document collection, buddy assignment, IT setup, policy orientation, and first-week guidance. Tell me where you are stuck and I will guide the next step.';
+  }
+  return 'I can help with HR policies, leave, payroll, benefits, onboarding, workplace support, and employee engagement. Ask me in chat or voice, and I will keep the conversation here for context.';
+}
+
+function extractResponseText(data) {
+  if (data?.output_text) return data.output_text;
+  const parts = [];
+  for (const item of data?.output || []) {
+    for (const content of item?.content || []) {
+      if (content?.type === 'output_text' && content?.text) parts.push(content.text);
+      if (content?.text && typeof content.text === 'string') parts.push(content.text);
+    }
+  }
+  return parts.join('\n').trim();
+}
+
+async function callOpenAIResponses({ message, history }) {
+  const key = process.env.OPENAI_API_KEY;
+  if (!key) return null;
+
+  const model = process.env.MYHR_CHAT_MODEL || 'gpt-4.1-mini';
+  const input = [
+    ...history.map((item) => ({
+      role: item.from === 'user' ? 'user' : 'assistant',
+      content: cleanText(item.text, 1200),
+    })).filter((item) => item.content),
+    { role: 'user', content: cleanText(message, 2000) },
+  ];
+
+  const response = await fetch('https://api.openai.com/v1/responses', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+    body: JSON.stringify({
+      model,
+      instructions: getMyHrInstructions(),
+      input,
+      temperature: 0.35,
+      max_output_tokens: 700,
+    }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const detail = data?.error?.message || `OpenAI Responses failed with ${response.status}`;
+    throw new Error(detail);
+  }
+
+  return { reply: extractResponseText(data), model };
+}
+
+app.http('myhr-agent-chat', {
+  methods: ['POST'], authLevel: 'anonymous', route: 'agents/hr-voice/chat',
+  handler: async (request, context) => {
+    try {
+      const auth = getAuthUser(request); if (!auth) return unauthorized();
+      const body = await request.json().catch(() => ({}));
+      const message = cleanText(body.message, 2000);
+      const history = Array.isArray(body.history) ? body.history.slice(-10) : [];
+      if (!message) return badRequest('Message is required.');
+
+      const llm = await callOpenAIResponses({ message, history });
+      const reply = llm?.reply || fallbackMyHrReply(message);
+      const source = llm?.reply ? 'openai-responses' : 'fallback';
+
+      structuredLog(context, 'info', 'MyHR chat answered', { userId: auth.uid, source, model: llm?.model || null });
+      return ok({ reply, source, model: llm?.model || null });
+    } catch (err) {
+      structuredLog(context, 'error', 'MyHR chat failed', { error: err.message });
+      return ok({ reply: fallbackMyHrReply(''), source: 'fallback', error: 'MyHR live model is unavailable right now.' });
+    }
+  },
+});
+
+app.http('myhr-realtime-session', {
+  methods: ['POST'], authLevel: 'anonymous', route: 'agents/hr-voice/realtime-session',
+  handler: async (request, context) => {
+    try {
+      const auth = getAuthUser(request); if (!auth) return unauthorized();
+      const key = process.env.OPENAI_API_KEY;
+      if (!key) return ok({ configured: false, reason: 'OPENAI_API_KEY is not configured.' });
+
+      const response = await fetch('https://api.openai.com/v1/realtime/client_secrets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+        body: JSON.stringify({
+          session: {
+            type: 'realtime',
+            model: process.env.MYHR_REALTIME_MODEL || 'gpt-realtime',
+            instructions: getMyHrInstructions(),
+            audio: { output: { voice: process.env.MYHR_REALTIME_VOICE || 'marin' } },
+          },
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const detail = data?.error?.message || `Realtime client secret failed with ${response.status}`;
+        throw new Error(detail);
+      }
+
+      structuredLog(context, 'info', 'MyHR realtime client secret created', { userId: auth.uid });
+      return ok({ configured: true, ...data });
+    } catch (err) {
+      structuredLog(context, 'error', 'MyHR realtime session failed', { error: err.message });
+      return ok({ configured: false, reason: 'Realtime voice is unavailable right now.' });
+    }
+  },
+});
+
 /* ====== GET /api/config — public app config from env vars ====== */
 app.http('config', {
   methods: ['GET'], authLevel: 'anonymous', route: 'config',
@@ -244,7 +386,145 @@ app.http('config', {
     appName: process.env.APP_NAME || 'Hub',
     tagline: process.env.APP_TAGLINE || 'AI-Powered Employee Workspace',
     hrPhoneNumber: process.env.APP_HR_PHONE || 'tel:+97140000000',
+    myHrChatModel: process.env.MYHR_CHAT_MODEL || 'gpt-4.1-mini',
+    myHrRealtimeModel: process.env.MYHR_REALTIME_MODEL || 'gpt-realtime',
+    myHrRealtimeVoice: process.env.MYHR_REALTIME_VOICE || 'marin',
+    myHrVoiceLanguage: process.env.MYHR_VOICE_LANGUAGE || 'en-US',
   }),
+});
+
+/* ====== AT MOTORS - document context + LLM concierge ====== */
+const AT_MOTORS_SYSTEM_PROMPT = `You are the AT MOTORS luxury automotive AI concierge.
+Represent a premium showroom with Ferrari, Ford performance, and Maserati vehicles.
+Use the supplied showroom context first. If context is missing, be transparent and give a helpful next step.
+Keep answers polished, concise, and sales-useful. When comparison is requested, compare performance,
+comfort, ownership fit, budget tier, and appointment next step. Never invent exact inventory availability.`;
+
+function trimText(value, max = 16000) {
+  return String(value || '').replace(/\s+/g, ' ').trim().slice(0, max);
+}
+
+function fallbackAtMotorsReply(message, contextText) {
+  const text = String(message || '').toLowerCase();
+  if (text.includes('book') || text.includes('viewing') || text.includes('test')) {
+    return 'I can help arrange a private viewing. Share your preferred date, model shortlist, and contact details, and AT MOTORS can prepare the right Ferrari, Ford, or Maserati experience.';
+  }
+  if (text.includes('finance') || text.includes('payment')) {
+    return 'For finance, Ford performance models are typically the most accessible, Maserati sits in the premium grand touring tier, and Ferrari is best handled through a bespoke ownership consultation.';
+  }
+  if (text.includes('compare') || text.includes('ferrari') || text.includes('maserati') || text.includes('ford')) {
+    return 'Ferrari is the emotional performance choice, Maserati is the refined luxury grand tourer, and Ford gives strong performance value. The best recommendation depends on whether you prioritize theatre, comfort, or daily usability.';
+  }
+  if (contextText) {
+    return `I found showroom context for this question. The strongest next step is to compare your preferred driving style, budget tier, and viewing date against the available AT MOTORS notes.`;
+  }
+  return 'I can compare models, explain ownership fit, qualify budget, and help book a private viewing with AT MOTORS.';
+}
+
+async function callAzureOpenAI(messages) {
+  const endpoint = (process.env.AZURE_OPENAI_ENDPOINT || '').replace(/\/+$/, '');
+  const key = process.env.AZURE_OPENAI_API_KEY;
+  const deployment = process.env.AZURE_OPENAI_DEPLOYMENT;
+  const apiVersion = process.env.AZURE_OPENAI_API_VERSION || '2024-10-21';
+  if (!endpoint || !key || !deployment) return null;
+
+  const response = await fetch(`${endpoint}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'api-key': key },
+    body: JSON.stringify({
+      messages,
+      temperature: 0.45,
+      max_tokens: 650,
+    }),
+  });
+
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const detail = data?.error?.message || `Azure OpenAI failed with ${response.status}`;
+    throw new Error(detail);
+  }
+  return data?.choices?.[0]?.message?.content || null;
+}
+
+app.http('at-motors-documents-list', {
+  methods: ['GET'], authLevel: 'anonymous', route: 'at-motors/documents',
+  handler: async () => {
+    try {
+      const { atMotorsDocs } = await getContainers();
+      const { resources } = await atMotorsDocs.items.query({
+        query: 'SELECT TOP 30 c.id, c.name, c.created_at, c.char_count FROM c WHERE c.brand = "at-motors" ORDER BY c.created_at DESC',
+      }).fetchAll();
+      return ok({ documents: resources });
+    } catch (err) {
+      return serverError('Could not load AT MOTORS documents.');
+    }
+  },
+});
+
+app.http('at-motors-documents-create', {
+  methods: ['POST'], authLevel: 'anonymous', route: 'at-motors/documents',
+  handler: async (request, context) => {
+    try {
+      const body = await request.json().catch(() => ({}));
+      const name = trimText(body.name, 120);
+      const content = trimText(body.content, 24000);
+      if (!name || !content || content.length < 20) return badRequest('Document name and at least 20 characters of text are required.');
+
+      const { atMotorsDocs } = await getContainers();
+      const doc = {
+        id: uuid(),
+        brand: 'at-motors',
+        name,
+        content,
+        char_count: content.length,
+        created_at: new Date().toISOString(),
+      };
+      await atMotorsDocs.items.create(doc);
+      structuredLog(context, 'info', 'AT MOTORS document saved', { documentId: doc.id, name });
+      return created({ document: { id: doc.id, name: doc.name, created_at: doc.created_at, char_count: doc.char_count } });
+    } catch (err) {
+      structuredLog(context, 'error', 'AT MOTORS document save failed', { error: err.message });
+      return serverError('Could not save AT MOTORS document.');
+    }
+  },
+});
+
+app.http('at-motors-chat', {
+  methods: ['POST'], authLevel: 'anonymous', route: 'at-motors/chat',
+  handler: async (request, context) => {
+    try {
+      const body = await request.json().catch(() => ({}));
+      const message = trimText(body.message, 2000);
+      const history = Array.isArray(body.history) ? body.history.slice(-8) : [];
+      if (!message) return badRequest('Message is required.');
+
+      const { atMotorsDocs } = await getContainers();
+      const { resources: docs } = await atMotorsDocs.items.query({
+        query: 'SELECT TOP 6 c.name, c.content FROM c WHERE c.brand = "at-motors" ORDER BY c.created_at DESC',
+      }).fetchAll();
+
+      const contextText = docs.map((doc, index) => `[Document ${index + 1}: ${doc.name}]\n${trimText(doc.content, 4500)}`).join('\n\n');
+      const messages = [
+        { role: 'system', content: AT_MOTORS_SYSTEM_PROMPT },
+        { role: 'system', content: contextText ? `Showroom context:\n${contextText}` : 'No uploaded showroom context is available yet.' },
+        ...history.map((item) => ({
+          role: item.from === 'user' ? 'user' : 'assistant',
+          content: trimText(item.text, 1200),
+        })).filter((item) => item.content),
+        { role: 'user', content: message },
+      ];
+
+      let reply = await callAzureOpenAI(messages);
+      const source = reply ? 'azure-openai' : 'fallback';
+      if (!reply) reply = fallbackAtMotorsReply(message, contextText);
+
+      structuredLog(context, 'info', 'AT MOTORS chat answered', { source, docs: docs.length });
+      return ok({ reply, source, documentsUsed: docs.map((doc) => doc.name) });
+    } catch (err) {
+      structuredLog(context, 'error', 'AT MOTORS chat failed', { error: err.message });
+      return serverError('Could not answer with the AT MOTORS concierge.');
+    }
+  },
 });
 
 /* ====== GET /api/health (REUSED) ====== */
