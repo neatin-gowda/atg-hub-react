@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { IconChevLeft } from '../components/Icons';
 
 export default function GiveKudos() {
   const navigate = useNavigate();
+  const { state } = useLocation();
   const { apiFetch } = useAuth();
   const { show } = useToast();
-  const [recipient, setRecipient] = useState('');
-  const [message, setMessage] = useState('');
+  const [recipient, setRecipient] = useState(state?.recipient || '');
+  const [message, setMessage] = useState(state?.message || '');
   const [error, setError] = useState('');
   const [sending, setSending] = useState(false);
 
