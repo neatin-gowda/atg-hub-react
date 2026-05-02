@@ -4,6 +4,7 @@ const DEFAULTS = {
   tagline: 'AI-Powered Employee Workspace',
   hrPhoneNumber: 'tel:+97140000000',
   myHrChatModel: 'gpt-4.1-mini',
+  myHrRealtimeProvider: 'azure-openai',
   myHrRealtimeModel: 'gpt-realtime',
   myHrRealtimeVoice: 'marin',
   myHrVoiceLanguage: 'en-US',
