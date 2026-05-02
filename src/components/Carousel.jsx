@@ -5,7 +5,7 @@ const SLIDES = [
   { tag: 'Preview', title: 'M365 Cowork is Now in Preview', sub: 'AI-powered collaboration workspace inside Teams. Early access open.', img: '/assets/images/hero/carousel-2-cowork.jpg' },
   { tag: 'AI News', title: 'Latest AI: GPT-5 & Enterprise Trends', sub: 'OpenAI benchmarks, Copilot Studio updates, enterprise AI insights.', img: '/assets/images/hero/carousel-3-ai-news.jpg' },
   { tag: 'Wellbeing', title: 'Wellness Week Starts Monday', sub: 'Guided mindfulness, fitness challenges, and mental health workshops.', img: '/assets/images/hero/carousel-4-wellness.jpg' },
-  { tag: 'HR Support', title: 'MyHR Voice Agent — Now Live', sub: 'Call the HR helpline to get instant support for leaves, policies, and more.', img: '/assets/images/hero/carousel-5-hr-agent.jpg'}
+  { tag: 'ATLAS', title: 'Talk to ATLAS — Now Live', sub: 'Ask ATLAS to answer, navigate, and hand off work to specialist agents.', img: '/assets/images/hero/carousel-5-hr-agent.jpg'}
 ];
 
 export default function Carousel() {
