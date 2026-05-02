@@ -236,14 +236,16 @@ app.http('activity-log', {
   },
 });
 
-/* ====== MyHR AI Agent — chat + realtime voice configuration ====== */
-const MYHR_DEFAULT_SYSTEM_PROMPT = `You are MyHR AI Agent for ATG Hub.
-Help employees with HR policy, leave, payroll, benefits, onboarding, workplace support, and employee engagement questions.
-Use the supplied grounding context first. Be warm, concise, professional, and clear when a human HR teammate is needed.
-Do not invent private employee data, balances, payroll amounts, or approvals. If the answer depends on a personal record, ask the employee to open the relevant app tile or contact HR.`;
+/* ====== Talk to ATLAS — orchestration + realtime voice configuration ====== */
+const MYHR_DEFAULT_SYSTEM_PROMPT = `You are Talk to ATLAS, the orchestration agent inside the ATLAS employee engagement app.
+You can answer questions, route to specialist agents, and guide users across Leave, Kudos, MyHR, IT, Finance, Knowledge Base, Profile, and other ATLAS modules.
+Use the supplied grounding context first. Be warm, concise, futuristic, and action oriented.
+Do not invent private employee data, balances, payroll amounts, or approvals. If an action affects records, draft and explain the next step unless the user request is explicit and the backend tool supports it.
+When another specialist is better, say which agent should handle it and why.`;
 
 const MYHR_DEFAULT_GROUNDING_CONTEXT = `Approved MyHR scope:
 - Company policies, WFH/WFA, working hours, leave, benefits, insurance, payroll, onboarding, learning, wellbeing, workplace support, and escalation guidance.
+- ATLAS app map: Leave Management at /leave, Kudos at /kudos/give, app directory at /apps, profile at /profile, Talk to ATLAS/MyHR voice at /app/hr-voice.
 - If policy context is missing, give a helpful next step and recommend HR confirmation for official decisions.`;
 
 function cleanText(value, max = 12000) {
@@ -270,7 +272,18 @@ function fallbackMyHrReply(message) {
   if (text.includes('onboard') || text.includes('joining') || text.includes('new joiner')) {
     return 'For onboarding, MyHR can help with document collection, buddy assignment, IT setup, policy orientation, and first-week guidance. Tell me where you are stuck and I will guide the next step.';
   }
-  return 'I can help with HR policies, leave, payroll, benefits, onboarding, workplace support, and employee engagement. Ask me in chat or voice, and I will keep the conversation here for context.';
+  return 'I can help as Talk to ATLAS: answer questions, open apps, hand off to MyHR, IT, Finance, or Knowledge agents, and guide safe actions across the employee hub.';
+}
+
+function buildMyHrMessages(message, history) {
+  return [
+    { role: 'system', content: getMyHrInstructions() },
+    ...history.map((item) => ({
+      role: item.from === 'user' ? 'user' : 'assistant',
+      content: cleanText(item.text, 1200),
+    })).filter((item) => item.content),
+    { role: 'user', content: cleanText(message, 2000) },
+  ];
 }
 
 function extractResponseText(data) {
@@ -290,13 +303,7 @@ async function callOpenAIResponses({ message, history }) {
   if (!key) return null;
 
   const model = process.env.MYHR_CHAT_MODEL || 'gpt-4.1-mini';
-  const input = [
-    ...history.map((item) => ({
-      role: item.from === 'user' ? 'user' : 'assistant',
-      content: cleanText(item.text, 1200),
-    })).filter((item) => item.content),
-    { role: 'user', content: cleanText(message, 2000) },
-  ];
+  const input = buildMyHrMessages(message, history).filter((item) => item.role !== 'system');
 
   const response = await fetch('https://api.openai.com/v1/responses', {
     method: 'POST',
@@ -329,9 +336,10 @@ app.http('myhr-agent-chat', {
       const history = Array.isArray(body.history) ? body.history.slice(-10) : [];
       if (!message) return badRequest('Message is required.');
 
-      const llm = await callOpenAIResponses({ message, history });
+      const azureReply = await callAzureOpenAI(buildMyHrMessages(message, history));
+      const llm = azureReply ? { reply: azureReply, model: process.env.AZURE_OPENAI_DEPLOYMENT || null } : await callOpenAIResponses({ message, history });
       const reply = llm?.reply || fallbackMyHrReply(message);
-      const source = llm?.reply ? 'openai-responses' : 'fallback';
+      const source = azureReply ? 'azure-openai' : llm?.reply ? 'openai-responses' : 'fallback';
 
       structuredLog(context, 'info', 'MyHR chat answered', { userId: auth.uid, source, model: llm?.model || null });
       return ok({ reply, source, model: llm?.model || null });
@@ -347,16 +355,30 @@ app.http('myhr-realtime-session', {
   handler: async (request, context) => {
     try {
       const auth = getAuthUser(request); if (!auth) return unauthorized();
-      const key = process.env.OPENAI_API_KEY;
-      if (!key) return ok({ configured: false, reason: 'OPENAI_API_KEY is not configured.' });
+      const body = await request.json().catch(() => ({}));
+      const provider = (process.env.MYHR_REALTIME_PROVIDER || 'azure-openai').toLowerCase();
+      const azureEndpoint = (process.env.AZURE_OPENAI_REALTIME_ENDPOINT || process.env.AZURE_OPENAI_ENDPOINT || '').replace(/\/+$/, '');
+      const azureKey = process.env.AZURE_OPENAI_REALTIME_API_KEY || process.env.AZURE_OPENAI_API_KEY;
+      const useAzure = provider !== 'openai' && azureEndpoint && azureKey;
+      if (body.probe) return ok({ configured: !!(useAzure || process.env.OPENAI_API_KEY), provider: useAzure ? 'azure-openai' : 'openai' });
+      const key = useAzure ? azureKey : process.env.OPENAI_API_KEY;
+      if (!key) return ok({ configured: false, reason: useAzure ? 'Azure OpenAI realtime key is not configured.' : 'OPENAI_API_KEY is not configured.' });
 
-      const response = await fetch('https://api.openai.com/v1/realtime/client_secrets', {
+      const clientSecretUrl = useAzure
+        ? `${azureEndpoint}/openai/v1/realtime/client_secrets`
+        : 'https://api.openai.com/v1/realtime/client_secrets';
+      const rtcUrl = useAzure
+        ? `${azureEndpoint}/openai/v1/realtime/calls`
+        : 'https://api.openai.com/v1/realtime/calls';
+      const response = await fetch(clientSecretUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+        headers: useAzure
+          ? { 'Content-Type': 'application/json', 'api-key': key }
+          : { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
         body: JSON.stringify({
           session: {
             type: 'realtime',
-            model: process.env.MYHR_REALTIME_MODEL || 'gpt-realtime',
+            model: process.env.AZURE_OPENAI_REALTIME_DEPLOYMENT || process.env.MYHR_REALTIME_MODEL || 'gpt-realtime',
             instructions: getMyHrInstructions(),
             audio: { output: { voice: process.env.MYHR_REALTIME_VOICE || 'marin' } },
           },
@@ -369,8 +391,8 @@ app.http('myhr-realtime-session', {
         throw new Error(detail);
       }
 
-      structuredLog(context, 'info', 'MyHR realtime client secret created', { userId: auth.uid });
-      return ok({ configured: true, ...data });
+      structuredLog(context, 'info', 'ATLAS realtime client secret created', { userId: auth.uid, provider: useAzure ? 'azure-openai' : 'openai' });
+      return ok({ configured: true, provider: useAzure ? 'azure-openai' : 'openai', rtcUrl, ...data });
     } catch (err) {
       structuredLog(context, 'error', 'MyHR realtime session failed', { error: err.message });
       return ok({ configured: false, reason: 'Realtime voice is unavailable right now.' });
@@ -387,6 +409,7 @@ app.http('config', {
     tagline: process.env.APP_TAGLINE || 'AI-Powered Employee Workspace',
     hrPhoneNumber: process.env.APP_HR_PHONE || 'tel:+97140000000',
     myHrChatModel: process.env.MYHR_CHAT_MODEL || 'gpt-4.1-mini',
+    myHrRealtimeProvider: process.env.MYHR_REALTIME_PROVIDER || 'azure-openai',
     myHrRealtimeModel: process.env.MYHR_REALTIME_MODEL || 'gpt-realtime',
     myHrRealtimeVoice: process.env.MYHR_REALTIME_VOICE || 'marin',
     myHrVoiceLanguage: process.env.MYHR_VOICE_LANGUAGE || 'en-US',
